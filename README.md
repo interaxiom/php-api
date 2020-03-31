@@ -56,44 +56,6 @@ Interaxiom Examples
 
 Do you want to use Interaxiom/ APIs? Maybe the script you want is already written in the [example part](examples/README.md) of this repository!
 
-How to login as a user
------------------------
-
-To communicate with APIs, the SDK uses a token on each request to identify the
-user. This token is called *Consumer Key*. To have a validated *Consumer Key*,
-you need to redirect your user on specific authentication page. Once the user has
-logged in, the token is validated and user will be redirected on __$redirection__ url.
-
-```php
-<?php
-require __DIR__ . '/vendor/autoload.php';
-use \Interaxiom\Api;
-
-session_start();
-
-// Informations about your application
-$applicationKey = "your_app_key";
-$applicationSecret = "your_app_secret";
-$redirection = "http://your_url.interaxiom";
-
-// Information about API and rights asked
-$endpoint = 'myaccount';
-$rights = array( (object) [
-    'method'  => 'GET',
-    'path'    => '/me*'
-]);
-
-// Get credentials
-$conn = new Api($applicationKey, $applicationSecret, $endpoint);
-$credentials = $conn->requestCredentials($rights, $redirection);
-
-// Save consumer key and redirect to authentication page
-$_SESSION['consumer_key'] = $credentials["consumerKey"];
-header('location: '. $credentials["validationUrl"]);
-...
-?>
-```
-
 How to print API error details?
 -------------------------------
 
