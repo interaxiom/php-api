@@ -131,7 +131,7 @@ Supported APIs
 ## My Account
 
  * ```$endpoint = 'myaccount';```
- * Documentation: https://www.interaxiom.com.au/knowledgebase/api
+ * Documentation: https://www.interaxiom.com.au/knowledgebase/api/
  * Community support: development@interaxiom.com.au
  * Console: https://myaccount.interaxiom.com.au/#!api/
  * Create application credentials: https://myaccount.interaxiom.com.au/#!user/api
