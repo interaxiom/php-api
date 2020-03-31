@@ -90,6 +90,8 @@ catch (GuzzleHttp\Exception\ClientException $e) {
 Supported APIs
 --------------
 
+The following endpoints are available for public use:
+
 ## My Account
 
  * ```$endpoint = 'myaccount';```
