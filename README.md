@@ -4,10 +4,12 @@ This PHP package is a lightweight wrapper for Interaxiom APIs. That's the easies
 
 ```php
 <?php
+
 /**
  * # Visit https://myaccount.interaxiom.com.au/#!user/api
  * to get your credentials
  */
+ 
 require __DIR__ . '/vendor/autoload.php';
 use \Interaxiom\Api;
 
@@ -18,6 +20,7 @@ $api = new Api(
     $consumer_key
 );
 echo "Welcome " . $api->get('/me')['firstname'];
+
 ?>
 ```
 
@@ -84,6 +87,7 @@ catch (GuzzleHttp\Exception\ClientException $e) {
     $responseBodyAsString = $response->getBody()->getContents();
     echo $responseBodyAsString;
 }
+
 ?>
 ```
 
