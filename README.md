@@ -11,13 +11,13 @@ This PHP package is a lightweight wrapper for Interaxiom APIs. That's the easies
 require __DIR__ . '/vendor/autoload.php';
 use \Interaxiom\Api;
 
-$interaxiom = new Api(
+$api = new Api(
     $applicationKey,
     $applicationSecret,
     $endpoint,
     $consumer_key
 );
-echo "Welcome " . $interaxiom->get('/me')['firstname'];
+echo "Welcome " . $api->get('/me')['firstname'];
 ?>
 ```
 
@@ -69,7 +69,7 @@ You can get the error details with a code like:
 require __DIR__ . '/vendor/autoload.php';
 use \Interaxiom\Api;
 
-$interaxiom = new Api(
+$api = new Api(
     $applicationKey,
     $applicationSecret,
     $endpoint,
@@ -77,7 +77,7 @@ $interaxiom = new Api(
 );
 
 try {
-  echo "Welcome " . $interaxiom->get('/me')['firstname'];
+  echo "Welcome " . $api->get('/me')['firstname'];
 }
 catch (GuzzleHttp\Exception\ClientException $e) {
     $response = $e->getResponse();
