@@ -71,7 +71,7 @@ use Interaxiom\Api;
 $applicationKey 	= "applicationKey";
 $applicationSecret  	= "applicationSecret";
 $redirection        	= "https://myaccount.interaxiom.com.au/#!api/";
-$endpoint 		    = 'myaccount';
+$endpoint		= 'myaccount';
 
 $rights = array(
     array(
