@@ -68,24 +68,28 @@ require __DIR__ . "/vendor/autoload.php";
 
 use Interaxiom\Api;
 
-$applicationKey     = "applicationKey";
+$applicationKey 	= "applicationKey";
 $applicationSecret  = "applicationSecret";
-$redirection 		     = "https://myaccount.interaxiom.com.au/#!api/";
-$endpoint           = 'myaccount';
+$redirection        = "https://myaccount.interaxiom.com.au/#!api/";
+$endpoint 		    = 'myaccount';
 
-$rights = array( (object) [
-    'method'    => 'DELETE',
-    'path'      => '/*'
-	],[
-    'method'    => 'GET',
-    'path'      => '/*'
-	],[
-    'method'    => 'POST',
-    'path'      => '/*'
-	],[
-    'method'    => 'PUT',
-    'path'      => '/*'
-	],
+$rights = array(
+    array(
+        'method'    => 'DELETE',
+        'path'      => '/*'
+	),
+    array(
+        'method'    => 'GET',
+        'path'      => '/*'
+	),
+    array(
+        'method'    => 'POST',
+        'path'      => '/*'
+	),
+    array(
+        'method'    => 'PUT',
+        'path'      => '/*'
+	)
 );
 
 $conn = new Api($applicationKey, $applicationSecret, $endpoint);
@@ -156,4 +160,3 @@ The following endpoints are available for public use:
 
  * Contribute: https://github.com/interaxiom/php-api
  * Report bugs: https://github.com/interaxiom/php-api/issues
-
