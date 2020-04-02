@@ -47,17 +47,65 @@ this file, create it at the root of your project with this content:
 
 ```
 
-Then, you can install Interaxiom APIs wrapper and dependencies with:
+Then, you can install the Interaxiom API wrapper and dependencies with:
 
   php composer.phar install
 
 This will install ``interaxiom/php-api`` to ``./vendor``, along with other dependencies
 including ``autoload.php``.
 
+How to authenticate as a user?
+-----------------------
+
+To communicate with the API endpoints, the SDK uses a token on each request to identify the
+user called a consumer key. Once you have created your application, you can use this example
+to request and validate your consumer key.
+
+```php
+<?php
+
+require __DIR__ . "/vendor/autoload.php";
+
+use Interaxiom\Api;
+
+$applicationKey     = "applicationKey";
+$applicationSecret  = "applicationSecret";
+$redirection 		     = "https://myaccount.interaxiom.com.au/#!api/";
+$endpoint           = 'myaccount';
+
+$rights = array( (object) [
+    'method'    => 'DELETE',
+    'path'      => '/*'
+	],[
+    'method'    => 'GET',
+    'path'      => '/*'
+	],[
+    'method'    => 'POST',
+    'path'      => '/*'
+	],[
+    'method'    => 'PUT',
+    'path'      => '/*'
+	],
+);
+
+$conn = new Api($applicationKey, $applicationSecret, $endpoint);
+$credentials = $conn->requestCredentials($rights, $redirection);
+
+?>
+    
+<p>You have generated a new consumer key for your application using endpoint: <b><?php echo $endpoint; ?></b>.</p>
+<ul>
+    <li><b>Application Key:</b><?php echo $applicationKey; ?></li>
+    <li><b>Application Secret:</b><?php echo $applicationSecret; ?></li>
+    <li><b>Consumer Key:</b><?php echo $credentials['consumerKey']; ?></li>
+</ul>
+<p>Validation URL: <a href="<?php echo $credentials['validationUrl']; ?>"><?php echo $credentials['validationUrl']; ?></a></p>
+```
+
 Interaxiom Examples
 -------------------
 
-Do you want to use Interaxiom/ APIs? Maybe the script you want is already written in the [example part](examples/README.md) of this repository!
+Do you want to use Interaxiom APIs? Maybe the script you want is already written in the [example](examples/README.md) part of this repository!
 
 How to print API error details?
 -------------------------------
