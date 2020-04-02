@@ -68,27 +68,27 @@ require __DIR__ . "/vendor/autoload.php";
 
 use Interaxiom\Api;
 
-$applicationKey 	= "applicationKey";
-$applicationSecret  = "applicationSecret";
-$redirection        = "https://myaccount.interaxiom.com.au/#!api/";
-$endpoint		= 'myaccount';
+$applicationKey = "applicationKey";
+$applicationSecret = "applicationSecret";
+$redirection = "https://myaccount.interaxiom.com.au/#!api/";
+$endpoint = 'myaccount';
 
 $rights = array(
     array(
-        'method'    => 'DELETE',
-        'path'      => '/*'
+        'method' => 'DELETE',
+        'path' => '/*'
 	),
     array(
-        'method'    => 'GET',
-        'path'      => '/*'
+        'method' => 'GET',
+        'path' => '/*'
 	),
     array(
-        'method'    => 'POST',
-        'path'      => '/*'
+        'method' => 'POST',
+        'path' => '/*'
 	),
     array(
-        'method'    => 'PUT',
-        'path'      => '/*'
+        'method' => 'PUT',
+        'path' => '/*'
 	)
 );
 
