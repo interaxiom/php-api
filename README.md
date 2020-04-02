@@ -68,10 +68,10 @@ require __DIR__ . "/vendor/autoload.php";
 
 use Interaxiom\Api;
 
-$applicationKey = "applicationKey";
+$applicationKey 	= "applicationKey";
 $applicationSecret  = "applicationSecret";
 $redirection        = "https://myaccount.interaxiom.com.au/#!api/";
-$endpoint	= 'myaccount';
+$endpoint		= 'myaccount';
 
 $rights = array(
     array(
