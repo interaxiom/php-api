@@ -19,7 +19,7 @@ $api = new Api(
     $endpoint,
     $consumer_key
 );
-echo "Welcome " . $api->get('/me')['firstname'];
+echo "Welcome " . $api->get('/me')['response']['firstname'];
 
 ?>
 ```
