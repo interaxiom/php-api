@@ -17,7 +17,7 @@ $api = new Api(
     $applicationKey,
     $applicationSecret,
     $endpoint,
-    $consumer_key
+    $consumerKey
 );
 echo "Welcome " . $api->get('/me')['response']['firstname'];
 
@@ -128,7 +128,7 @@ $api = new Api(
     $applicationKey,
     $applicationSecret,
     $endpoint,
-    $consumer_key
+    $consumerKey
 );
 
 try {
