@@ -109,7 +109,7 @@ $credentials = $conn->requestCredentials($rights, $redirection);
 Interaxiom Examples
 -------------------
 
-Do you want to use Interaxiom APIs? Maybe the script you want is already written in the [example](examples/README.md) part of this repository!
+Do you want to use Interaxiom APIs? Maybe the script you want is already written in the [example](https://github.com/interaxiom/php-api/tree/master/example) part of this repository!
 
 How to print API error details?
 -------------------------------
