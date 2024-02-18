@@ -4,16 +4,16 @@ require_once __DIR__ . "/../../../../vendor/autoload.php";
 
 use Interaxiom\Api;
 
-$applicationKey     = "applicationKey";
-$applicationSecret  = "applicationSecret";
-$consumer_key       = "consumer_key";
-$endpoint           = "myaccount";
+$applicationPublic	= "public-key";
+$applicationSecret	= "private-key";
+$applicationKey		= "application-key";
+$endpoint		= "api-endpoint";
 
 $api = new Api(
-	$applicationKey,
+	$applicationPublic,
 	$applicationSecret,
 	$endpoint,
-	$consumer_key
+	$applicationKey
 );
 try {
 	$response = $api->get("/me");
