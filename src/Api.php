@@ -53,7 +53,7 @@ class Api
      * @var array
      */
     private $endpoints = [
-        'myaccount' => 'https://myaccount.interaxiom.com.au/api/1.0',
+        'myaccount' => 'https://api.interaxiom.com.au/v1',
     ];
 
     /**
@@ -68,7 +68,7 @@ class Api
      *
      * @var string
      */
-    private $application_key = null;
+    private $application_public = null;
 
     /**
      * Contain secret of the current application
@@ -82,7 +82,7 @@ class Api
      *
      * @var string
      */
-    private $consumer_key = null;
+    private $application_key = null;
 
     /**
      * Contain delta between local timestamp and api server timestamp
@@ -101,22 +101,22 @@ class Api
     /**
      * Construct a new wrapper instance
      *
-     * @param string $application_key    key of your application.
+     * @param string $application_public    key of your application.
      *                                   For Interaxiom APIs, you can create a application's credentials on
      *                                   https://api.ovh.com/createApp/
      * @param string $application_secret secret of your application.
      * @param string $api_endpoint       name of api selected
-     * @param string $consumer_key       If you have already a consumer key, this parameter prevent to do a
+     * @param string $application_key       If you have already a consumer key, this parameter prevent to do a
      *                                   new authentication
      * @param Client $http_client        instance of http client
      *
      * @throws Exceptions\InvalidParameterException if one parameter is missing or with bad value
      */
     public function __construct(
-        $application_key,
+        $application_public,
         $application_secret,
         $api_endpoint,
-        $consumer_key = null,
+        $application_key = null,
         Client $http_client = null
     ) {
         if (!isset($api_endpoint)) {
@@ -145,12 +145,12 @@ class Api
             ]);
         }
 
-        $this->application_key = $application_key;
+        $this->application_public = $application_public;
         $this->application_secret = $application_secret;
         $this->http_client = $http_client;
-        $this->consumer_key = $consumer_key;
+        $this->application_key = $application_key;
         $this->time_delta = null;
-    }
+    }           
 
     /**
      * Calculate time delta between local machine and API's server
@@ -202,7 +202,7 @@ class Api
             )
         );
 
-        $this->consumer_key = $response["consumerKey"];
+        $this->application_key = $response["consumerKey"];
 
         return $response;
     }
@@ -223,12 +223,12 @@ class Api
     {
         if ( $is_authenticated )
         {
-            if (!isset($this->application_key)) {
-                throw new Exceptions\InvalidParameterException("Application key parameter is empty");
+            if (!isset($this->application_public)) {
+                throw new Exceptions\InvalidParameterException("Public key parameter is empty");
             }
 
             if (!isset($this->application_secret)) {
-                throw new Exceptions\InvalidParameterException("Application secret parameter is empty");
+                throw new Exceptions\InvalidParameterException("Secret key parameter is empty");
             }
         }
 
@@ -276,9 +276,7 @@ class Api
         $headers['Content-Type']   ='application/json; charset=utf-8';
 
         if ($is_authenticated) {
-
-            $headers['X-Interaxiom-Application'] = $this->application_key;
-
+			
             if (!isset($this->time_delta)) {
                 $this->calculateTimeDelta();
             }
@@ -286,10 +284,9 @@ class Api
 
             $headers['X-Interaxiom-Timestamp'] = $now;
 
-            if (isset($this->consumer_key)) {
-                $headers['X-Interaxiom-Consumer'] = $this->consumer_key;
-                $headers['X-Interaxiom-Signature'] = password_hash($this->application_secret, PASSWORD_DEFAULT);
-            }
+            $headers['X-Interaxiom-Application'] = $this->application_key;
+            $headers['X-Interaxiom-Public'] = $this->application_public;
+            $headers['X-Interaxiom-Secret'] = $this->application_secret;
         }
 
         /** @var Response $response */
@@ -393,9 +390,9 @@ class Api
     /**
      * Get the current consumer key
      */
-    public function getConsumerKey()
+    public function getApplicationKey()
     {
-        return $this->consumer_key;
+        return $this->application_key;
     }
 
     /**
