@@ -1,4 +1,5 @@
 <?php
+
 # Copyright (c) 2011-2020, Interaxiom.
 # All rights reserved.
 #
@@ -45,6 +46,7 @@ use GuzzleHttp\Psr7\Response;
  * @package  Interaxiom
  * @category Interaxiom
  */
+ 
 class Api
 {
     /**
@@ -52,8 +54,10 @@ class Api
      *
      * @var array
      */
+	 
     private $endpoints = [
-        'myaccount' => 'https://api.interaxiom.com.au/v1',
+        'private' => 'https://api.interaxiom.com.au/v1',
+		'myaccount' => 'https://myaccount.interaxiom.com.au/api/v1',
     ];
 
     /**
@@ -61,27 +65,31 @@ class Api
      *
      * @var string
      */
+	 
     private $endpoint = null;
 
     /**
-     * Contain key of the current application
+     * Contain public key of the current application
      *
      * @var string
      */
+	 
     private $application_public = null;
 
     /**
-     * Contain secret of the current application
+     * Contain secret key of the current application
      *
      * @var string
      */
+	 
     private $application_secret = null;
 
     /**
-     * Contain consumer key of the current application
+     * Contain application key of the current application
      *
      * @var string
      */
+	 
     private $application_key = null;
 
     /**
@@ -89,6 +97,7 @@ class Api
      *
      * @var string
      */
+	 
     private $time_delta = null;
 
     /**
@@ -96,22 +105,21 @@ class Api
      *
      * @var Client
      */
+	 
     private $http_client = null;
 
     /**
      * Construct a new wrapper instance
      *
-     * @param string $application_public    key of your application.
-     *                                   For Interaxiom APIs, you can create a application's credentials on
-     *                                   https://api.ovh.com/createApp/
-     * @param string $application_secret secret of your application.
-     * @param string $api_endpoint       name of api selected
-     * @param string $application_key       If you have already a consumer key, this parameter prevent to do a
-     *                                   new authentication
-     * @param Client $http_client        instance of http client
+     * @param string $application_public    public key of your application.
+     * @param string $application_secret	secret key of your application.
+     * @param string $application_key		identity key of your application.
+     * @param string $api_endpoint			name of api selected
+     * @param Client $http_client			instance of http client
      *
      * @throws Exceptions\InvalidParameterException if one parameter is missing or with bad value
      */
+	 
     public function __construct(
         $application_public,
         $application_secret,
@@ -158,6 +166,7 @@ class Api
      * @throws \GuzzleHttp\Exception\ClientException if http request is an error
      * @return int
      */
+	 
     private function calculateTimeDelta()
     {
         if (!isset($this->time_delta)) {
@@ -173,40 +182,7 @@ class Api
 
         return $this->time_delta;
     }
-
-    /**
-     * Request a consumer key from the API and the validation link to
-     * authorize user to validate this consumer key
-     *
-     * @param array  $accessRules list of rules your application need.
-     * @param string $redirection url to redirect on your website after authentication
-     *
-     * @return mixed
-     * @throws \GuzzleHttp\Exception\ClientException if http request is an error
-     */
-    public function requestCredentials(
-        array $accessRules,
-        $redirection = null
-    ) {
-        $parameters = new \StdClass();
-        $parameters->accessRules = $accessRules;
-        $parameters->redirection = $redirection;
-
-        //bypass authentication for this call
-        $response = $this->decodeResponse(
-            $this->rawCall(
-                'POST',
-                '/auth/credential',
-                $parameters,
-                true
-            )
-        );
-
-        $this->application_key = $response["consumerKey"];
-
-        return $response;
-    }
-
+	
     /**
      * This is the main method of this wrapper. It will
      * sign a given query and return its result.
@@ -219,6 +195,7 @@ class Api
      * @return array
      * @throws \GuzzleHttp\Exception\ClientException if http request is an error
      */
+	 
     protected function rawCall($method, $path, $content = null, $is_authenticated = true, $headers = null)
     {
         if ( $is_authenticated )
@@ -284,9 +261,9 @@ class Api
 
             $headers['X-Interaxiom-Timestamp'] = $now;
 
-            $headers['X-Interaxiom-Application'] = $this->application_key;
-            $headers['X-Interaxiom-Public'] = $this->application_public;
-            $headers['X-Interaxiom-Secret'] = $this->application_secret;
+            $headers['X-Interaxiom-Application-Key'] = $this->application_key;
+            $headers['X-Interaxiom-Public-Key'] = $this->application_public;
+            $headers['X-Interaxiom-Secret-Key'] = $this->application_secret;
         }
 
         /** @var Response $response */
@@ -300,6 +277,7 @@ class Api
      *
      * @return array
      */
+	 
     private function decodeResponse(Response $response)
     {
         return json_decode($response->getBody(), true);
@@ -316,6 +294,7 @@ class Api
      * @return array
      * @throws \GuzzleHttp\Exception\ClientException if http request is an error
      */
+	 
     public function get($path, $content = null, $headers = null, $is_authenticated = true)
     {
         if(preg_match('/^\/[^\/]+\.json$/', $path))
@@ -344,6 +323,7 @@ class Api
      * @return array
      * @throws \GuzzleHttp\Exception\ClientException if http request is an error
      */
+	 
     public function post($path, $content = null, $headers = null, $is_authenticated = true)
     {
         return $this->decodeResponse(
@@ -362,6 +342,7 @@ class Api
      * @return array
      * @throws \GuzzleHttp\Exception\ClientException if http request is an error
      */
+	 
     public function put($path, $content, $headers = null, $is_authenticated = true)
     {
         return $this->decodeResponse(
@@ -380,6 +361,7 @@ class Api
      * @return array
      * @throws \GuzzleHttp\Exception\ClientException if http request is an error
      */
+	 
     public function delete($path, $content = null, $headers = null, $is_authenticated = true)
     {
         return $this->decodeResponse(
@@ -390,6 +372,7 @@ class Api
     /**
      * Get the current consumer key
      */
+	 
     public function getApplicationKey()
     {
         return $this->application_key;
@@ -398,6 +381,7 @@ class Api
     /**
      * Return instance of http client
      */
+	 
     public function getHttpClient()
     {
         return $this->http_client;
