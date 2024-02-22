@@ -14,10 +14,10 @@ require __DIR__ . '/vendor/autoload.php';
 use \Interaxiom\Api;
 
 $api = new Api(
-    $applicationKey,
-    $applicationSecret,
+    $public_key,
+    $private_key,
     $endpoint,
-    $consumerKey
+    $application_key
 );
 echo "Welcome " . $api->get('/me')['response']['firstname'];
 
@@ -65,10 +65,10 @@ require __DIR__ . '/vendor/autoload.php';
 use \Interaxiom\Api;
 
 $api = new Api(
-    $applicationKey,
-    $applicationSecret,
+    $public_key,
+    $private_key,
     $endpoint,
-    $consumerKey
+    $application_key
 );
 
 try {
