@@ -82,7 +82,7 @@ class Api
      * @var string
      */
 	 
-    private $application_secret = null;
+    private $application_private = null;
 
     /**
      * Contain application key of the current application
@@ -112,7 +112,7 @@ class Api
      * Construct a new wrapper instance
      *
      * @param string $application_public    public key of your application.
-     * @param string $application_secret	secret key of your application.
+     * @param string $application_private	secret key of your application.
      * @param string $application_key		identity key of your application.
      * @param string $api_endpoint			name of api selected
      * @param Client $http_client			instance of http client
@@ -122,7 +122,7 @@ class Api
 	 
     public function __construct(
         $application_public,
-        $application_secret,
+        $application_private,
         $api_endpoint,
         $application_key = null,
         Client $http_client = null
@@ -154,7 +154,7 @@ class Api
         }
 
         $this->application_public = $application_public;
-        $this->application_secret = $application_secret;
+        $this->application_private = $application_private;
         $this->http_client = $http_client;
         $this->application_key = $application_key;
         $this->time_delta = null;
@@ -204,7 +204,7 @@ class Api
                 throw new Exceptions\InvalidParameterException("Public key parameter is empty");
             }
 
-            if (!isset($this->application_secret)) {
+            if (!isset($this->application_private)) {
                 throw new Exceptions\InvalidParameterException("Secret key parameter is empty");
             }
         }
@@ -263,7 +263,7 @@ class Api
 
             $headers['X-Interaxiom-Application-Key'] = $this->application_key;
             $headers['X-Interaxiom-Public-Key'] = $this->application_public;
-            $headers['X-Interaxiom-Secret-Key'] = $this->application_secret;
+            $headers['X-Interaxiom-Private-Key'] = $this->application_private;
         }
 
         /** @var Response $response */
