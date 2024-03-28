@@ -1,235 +1,389 @@
 <?php
 
-namespace iRacingPHP;
+# Copyright (c) 2011-2020, Interaxiom.
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+#   * Redistributions of source code must retain the above copyright
+#     notice, this list of conditions and the following disclaimer.
+#   * Redistributions in binary form must reproduce the above copyright
+#     notice, this list of conditions and the following disclaimer in the
+#     documentation and/or other materials provided with the distribution.
+#   * Neither the name of Interaxiom nor the
+#     names of its contributors may be used to endorse or promote products
+#     derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY INTERAXIOM AND CONTRIBUTORS ``AS IS'' AND ANY
+# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL INTERAXIOM AND CONTRIBUTORS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+/**
+ * This file contains code about \Interaxiom\Api class
+ */
 
-use iRacingPHP\Exceptions\AuthenticationFailedException;
-use iRacingPHP\Exceptions\AuthenticationRequestFailedException;
-use iRacingPHP\Exceptions\RequestRateLimitedException;
-use iRacingPHP\Exceptions\SiteMaintenanceException;
-use iRacingPHP\Exceptions\RequestFailedException;
-use iRacingPHP\Models\RateLimits;
-use \GuzzleHttp\Cookie\FileCookieJar;
-use iRacingPHP\Exceptions\DataRequestFailedException;
+namespace Interaxiom;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Response;
+
+/**
+ * Wrapper to manage login and exchanges with simpliest Interaxiom API
+ *
+ * This class manage how works connections to the simple Interaxiom API with
+ * login method and call wrapper
+ * Http connections use guzzle http client api and result of request are
+ * object from this http wrapper
+ *
+ * @package  Interaxiom
+ * @category Interaxiom
+ */
+ 
 class Api
 {
-    private string $username;
-    private string $loginHash;
-
-    private FileCookieJar $jar;
-    private \GuzzleHttp\Client $guzzle;
-
-    public RateLimits $rateLimits;
-
-    function __construct(string $username, string $password, string $cookiejar)
-    {
-        $this->username = $username;
-        $this->loginHash = $this->hashLogin($username, $password);
-        $this->jar = new FileCookieJar($cookiejar);
-        $this->guzzle = new \GuzzleHttp\Client();
-        $this->rateLimits = new RateLimits();
-    }
+    /**
+     * Url to communicate with Interaxiom API
+     *
+     * @var array
+     */
+	 
+    private $endpoints = [
+        'private' => 'https://api.interaxiom.com.au/v1',
+		'myaccount' => 'https://api.interaxiom.com.au/v1/myaccount',
+    ];
 
     /**
-     * Calls requestLogin() to make the authentication request, checks the response.
+     * Contain endpoint selected to choose API
      *
-     * @return mixed Authentication response
-     * @throws AuthenticationFailedException
+     * @var string
      */
-    private function authenticate()
-    {
-        $auth = $this->requestLogin();
+	 
+    private $endpoint = null;
 
-        if($auth->authcode === 0)
-        {
-            throw new AuthenticationFailedException($auth->message);
+    /**
+     * Contain public key of the current application
+     *
+     * @var string
+     */
+	 
+    private $application_public = null;
+
+    /**
+     * Contain secret key of the current application
+     *
+     * @var string
+     */
+	 
+    private $application_private = null;
+
+    /**
+     * Contain application key of the current application
+     *
+     * @var string
+     */
+	 
+    private $application_key = null;
+
+    /**
+     * Contain delta between local timestamp and api server timestamp
+     *
+     * @var string
+     */
+	 
+    private $time_delta = null;
+
+    /**
+     * Contain http client connection
+     *
+     * @var Client
+     */
+	 
+    private $http_client = null;
+
+    /**
+     * Construct a new wrapper instance
+     *
+     * @param string $application_public    public key of your application.
+     * @param string $application_private	secret key of your application.
+     * @param string $application_key		identity key of your application.
+     * @param string $api_endpoint			name of api selected
+     * @param Client $http_client			instance of http client
+     *
+     * @throws Exceptions\InvalidParameterException if one parameter is missing or with bad value
+     */
+	 
+    public function __construct(
+        $application_public,
+        $application_private,
+        $application_key = null,
+        $api_endpoint,
+        Client $http_client = null
+    ) {
+        if (!isset($api_endpoint)) {
+            throw new Exceptions\InvalidParameterException("Endpoint parameter is empty");
         }
 
-        return $auth;
-    }
-
-    /**
-     * Hashes the username and password according to iRacing requirements.
-     *
-     * @param string $username
-     * @param string $password
-     * @return string
-     */
-    private function hashLogin(string $username, string $password)
-    {
-        $concat = mb_convert_encoding($password . strtolower($username), 'UTF-8');
-        $hash = hash('sha256', $concat, true);
-        return base64_encode($hash);
-    }
-
-    /**
-     * Makes a POST request to authenticate.
-     *
-     * @return mixed Authentication result
-     * @throws AuthenticationRequestFailedException
-     */
-    private function requestLogin()
-    {
-        try
+        if (preg_match('/^https?:\/\/..*/',$api_endpoint))
         {
-            $response = $this->guzzle->request('POST', 'https://members-ng.iracing.com/auth', [
-                'cookies' => $this->jar,
-                'headers' => [
-                    'Accept' => 'application/json',
-                    'Content-Type' => 'application/json',
-                ],
-                'body' => json_encode([
-                    'email' => $this->username,
-                    'password' => $this->loginHash
-                ])
+          $this->endpoint = $api_endpoint;
+        }
+        else
+        {
+          if (!array_key_exists($api_endpoint, $this->endpoints)) {
+              throw new Exceptions\InvalidParameterException("Unknown provided endpoint");
+          }
+          else
+          {
+            $this->endpoint = $this->endpoints[$api_endpoint];
+          }
+        }
+
+        if (!isset($http_client)) {
+            $http_client = new Client([
+                'timeout' => 30,
+                'connect_timeout' => 5,
             ]);
-
-            return json_decode($response->getBody());
         }
-        catch(\GuzzleHttp\Exception\BadResponseException $e)
+
+        $this->application_public = $application_public;
+        $this->application_private = $application_private;
+        $this->http_client = $http_client;
+        $this->application_key = $application_key;
+        $this->time_delta = null;
+    }           
+
+    /**
+     * Calculate time delta between local machine and API's server
+     *
+     * @throws \GuzzleHttp\Exception\ClientException if http request is an error
+     * @return int
+     */
+	 
+    private function calculateTimeDelta()
+    {
+        if (!isset($this->time_delta)) {
+            $response = $this->rawCall(
+                'GET',
+                "/auth/time",
+                null,
+                false
+            );
+            $serverTimestamp = (int)(string)$response->getBody();
+            $this->time_delta = $serverTimestamp - (int)\time();
+        }
+
+        return $this->time_delta;
+    }
+	
+    /**
+     * This is the main method of this wrapper. It will
+     * sign a given query and return its result.
+     *
+     * @param string               $method           HTTP method of request (GET,POST,PUT,DELETE)
+     * @param string               $path             relative url of API request
+     * @param \stdClass|array|null $content          body of the request
+     * @param bool                 $is_authenticated if the request use authentication
+     *
+     * @return array
+     * @throws \GuzzleHttp\Exception\ClientException if http request is an error
+     */
+	 
+    protected function rawCall($method, $path, $content = null, $is_authenticated = true, $headers = null)
+    {
+        if ( $is_authenticated )
         {
-            throw new AuthenticationRequestFailedException($e->getMessage(), 0, $e);
+            if (!isset($this->application_public)) {
+                throw new Exceptions\InvalidParameterException("Public key parameter is empty");
+            }
+
+            if (!isset($this->application_private)) {
+                throw new Exceptions\InvalidParameterException("Secret key parameter is empty");
+            }
         }
 
-        return null;
+        $url  =$this->endpoint . $path;
+        $request = new Request($method, $url);
+        if (isset($content) && $method == 'GET') {
+            $query_string = $request->getUri()->getQuery();
+
+            $query = array();
+            if (!empty($query_string)) {
+                $queries = explode('&', $query_string);
+                foreach ($queries as $element) {
+                    $key_value_query = explode('=', $element, 2);
+                    $query[$key_value_query[0]] = $key_value_query[1];
+                }
+            }
+
+            $query = array_merge($query, (array)$content);
+
+            // rewrite query args to properly dump true/false parameters
+            foreach ($query as $key => $value) {
+                if ($value === false) {
+                    $query[$key] = "false";
+                } elseif ($value === true) {
+                    $query[$key] = "true";
+                }
+            }
+
+            $query = \GuzzleHttp\Psr7\build_query($query);
+
+            $url  =$request->getUri()->withQuery($query);
+            $request = $request->withUri($url);
+            $body ="";
+        } elseif (isset($content)) {
+            $body = json_encode($content, JSON_UNESCAPED_SLASHES);
+
+            $request->getBody()->write($body);
+        } else {
+            $body = "";
+        }
+        if(!is_array($headers))
+        {
+            $headers = [];
+        }
+        $headers['Content-Type']   ='application/json; charset=utf-8';
+
+        if ($is_authenticated) {
+			
+            if (!isset($this->time_delta)) {
+                $this->calculateTimeDelta();
+            }
+            $now = time() + $this->time_delta;
+
+            $headers['X-Interaxiom-Timestamp'] = $now;
+
+            $headers['X-Interaxiom-Application-Key'] = $this->application_key;
+            $headers['X-Interaxiom-Public-Key'] = $this->application_public;
+            $headers['X-Interaxiom-Private-Key'] = $this->application_private;
+        }
+
+        /** @var Response $response */
+        return $this->http_client->send($request, ['headers' => $headers]);
     }
 
     /**
-     * Retrieved cached data via the URL provided by the API,
-     * and any associated chunks.
+     * Decode a Response object body to an Array
      *
-     * @param string $url
-     * @return mixed
-     * @throws DataRequestFailedException
+     * @param  Response $response
+     *
+     * @return array
      */
-    private function retrieveData(string $url)
+	 
+    private function decodeResponse(Response $response)
     {
-        try
-        {
-            $response = $this->guzzle->request('GET', $url);
-            $responseBody = json_decode($response->getBody());
-
-            if(isset($responseBody->chunk_info))
-            {
-                $responseBody->data = $this->retrieveChunks($responseBody->chunk_info);
-                unset($responseBody->chunk_info);
-            }
-
-            return $responseBody;
-        }
-        catch(\GuzzleHttp\Exception\BadResponseException $e)
-        {
-            throw new DataRequestFailedException($e->getMessage(), 0, $e);
-        }
-        return null;
+        return json_decode($response->getBody(), true);
     }
 
     /**
-     * Retrieves cached data chunks from the URL provided by the API.
+     * Wrap call to Interaxiom APIs for GET requests
      *
-     * @param mixed $body
-     * @return mixed
-     * @throws DataRequestFailedException
+     * @param string $path    path ask inside api
+     * @param array  $content content to send inside body of request
+     * @param array  headers  custom HTTP headers to add on the request
+     * @param bool   is_authenticated   if the request need to be authenticated
+     *
+     * @return array
+     * @throws \GuzzleHttp\Exception\ClientException if http request is an error
      */
-    private function retrieveChunks(mixed $chunks)
+	 
+    public function get($path, $content = null, $headers = null, $is_authenticated = true)
     {
-        $result = [];
-        try
+        if(preg_match('/^\/[^\/]+\.json$/', $path))
         {
-            $baseUrl = $chunks->base_download_url;
-            foreach($chunks->chunk_file_names as $fileName)
-            {
-                $response = $this->guzzle->request('GET', $baseUrl . $fileName);
-                $result[] = json_decode($response->getBody());
-            }
-
-            return $result;
+          // Schema description must be access without authentication
+          return $this->decodeResponse(
+              $this->rawCall("GET", $path, $content, false, $headers)
+          );
         }
-        catch(\GuzzleHttp\Exception\BadResponseException $e)
+        else
         {
-            throw new DataRequestFailedException($e->getMessage(), 0, $e);
+          return $this->decodeResponse(
+              $this->rawCall("GET", $path, $content, $is_authenticated, $headers)
+          );
         }
     }
 
     /**
-     * Public request method, used by the Data classes.
-     * Retrieves the cached data link or chunk data from the API endpoint, then the data itself.
+     * Wrap call to Interaxiom APIs for POST requests
      *
-     * @param string $endpoint 
-     * @param array $data Optional parameters to be passed with the request
-     * @return mixed Requested data
+     * @param string $path    path ask inside api
+     * @param array  $content content to send inside body of request
+     * @param array  headers  custom HTTP headers to add on the request
+     * @param bool   is_authenticated   if the request need to be authenticated
+     *
+     * @return array
+     * @throws \GuzzleHttp\Exception\ClientException if http request is an error
      */
-    public function request(string $endpoint, array $data = [])
+	 
+    public function post($path, $content = null, $headers = null, $is_authenticated = true)
     {
-        $url = LibConstants::APIURL . $endpoint;
-        try
-        {
-            $response = $this->guzzle->request('GET', $url, [
-                'cookies' => $this->jar,
-                'query' => $data
-            ]);
-
-            $this->setRateLimits($response);
-
-            $responseBody = json_decode($response->getBody());
-            if(isset($responseBody->link))
-            {
-                return $this->retrieveData($responseBody->link);
-            }
-            if(isset($responseBody->data->chunk_info))
-            {
-                return $this->retrieveChunks($responseBody->data->chunk_info);
-            }
-        }
-        catch(\GuzzleHttp\Exception\BadResponseException $e)
-        {
-            $response = $e->getResponse();
-            $this->setRateLimits($response);
-            if($this->shouldRetryRequest($response, $e->getMessage(), $e))
-            {
-                return $this->request($endpoint, $data);
-            }
-        }
-        return null;
+        return $this->decodeResponse(
+            $this->rawCall("POST", $path, $content, $is_authenticated, $headers)
+        );
     }
 
     /**
-     * Updates the rate limit values.
+     * Wrap call to Interaxiom APIs for PUT requests
      *
-     * @param \GuzzleHttp\Psr7\Response $response API request response object.
-     * @return void
+     * @param string $path    path ask inside api
+     * @param array  $content content to send inside body of request
+     * @param array  headers  custom HTTP headers to add on the request
+     * @param bool   is_authenticated   if the request need to be authenticated
+     *
+     * @return array
+     * @throws \GuzzleHttp\Exception\ClientException if http request is an error
      */
-    private function setRateLimits(\GuzzleHttp\Psr7\Response $response)
+	 
+    public function put($path, $content, $headers = null, $is_authenticated = true)
     {
-        $this->rateLimits->limit = (int)$response->getHeaderLine('x-ratelimit-limit');
-        $this->rateLimits->remaining = (int)$response->getHeaderLine('x-ratelimit-remaining');
-        $this->rateLimits->reset = (int)$response->getHeaderLine('x-ratelimit-reset');
+        return $this->decodeResponse(
+            $this->rawCall("PUT", $path, $content, $is_authenticated, $headers)
+        );
     }
 
     /**
-     * Checks response code, attempts authentication if unauthorized, throws specific exceptions otherwise.
+     * Wrap call to Interaxiom APIs for DELETE requests
      *
-     * @param \GuzzleHttp\Psr7\Response $response Response returned by the request
-     * @param string $message Response message to be injected into Exceptions
-     * @return boolean True if another attempt to make the request should be made (after authentication)
-     * @throws RequestRateLimitedException
-     * @throws SiteMaintenanceException
-     * @throws RequestFailedException|AuthenticationFailedException
+     * @param string $path    path ask inside api
+     * @param array  $content content to send inside body of request
+     * @param array  headers  custom HTTP headers to add on the request
+     * @param bool   is_authenticated   if the request need to be authenticated
+     *
+     * @return array
+     * @throws \GuzzleHttp\Exception\ClientException if http request is an error
      */
-    private function shouldRetryRequest(\GuzzleHttp\Psr7\Response $response, string $message, \Exception $oldEx)
+	 
+    public function delete($path, $content = null, $headers = null, $is_authenticated = true)
     {
-        switch($response->getStatusCode())
-        {
-            case 401:
-                $this->authenticate();
-                return true;
-            case 429:
-                throw new RequestRateLimitedException('Rate limit exceeded', 0, $oldEx);
-            case 503:
-                throw new SiteMaintenanceException('Site maintenance', 0, $oldEx);
-        }
-
-        throw new RequestFailedException($message, 0, $oldEx);
+        return $this->decodeResponse(
+            $this->rawCall("DELETE", $path, $content, $is_authenticated, $headers)
+        );
     }
 
+    /**
+     * Get the current consumer key
+     */
+	 
+    public function getApplicationKey()
+    {
+        return $this->application_key;
+    }
+
+    /**
+     * Return instance of http client
+     */
+	 
+    public function getHttpClient()
+    {
+        return $this->http_client;
+    }
 }
