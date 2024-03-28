@@ -16,8 +16,8 @@ use \Interaxiom\Api;
 $api = new Api(
     $public_key,
     $private_key,
-    $endpoint,
-    $application_key
+    $application_key,
+    $endpoint
 );
 echo "Welcome " . $api->get('/me')['response']['firstname'];
 
