@@ -56,9 +56,9 @@ class Api
      */
 	 
     private $endpoints = [
-        'private' => 'https://api.interaxiom.com.au/v1',
-	'local' => 'https://api.interaxiom.local/v1',
-	'myaccount' => 'https://myaccount.interaxiom.com.au/api/v1',
+        'private' => 'https://api.interaxiom.com.au',
+	'local' => 'https://api.interaxiom.local',
+	'myaccount' => 'https://myaccount.interaxiom.com.au/api',
     ];
 
     /**
