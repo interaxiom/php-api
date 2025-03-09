@@ -6,7 +6,7 @@ This PHP package is a lightweight wrapper for Interaxiom API's. That's the easie
 <?php
 
 /**
- * # Visit https://myaccount.interaxiom.com.au/#!user/api
+ * # Visit https://myaccount.interaxiom.com.au/api
  * to get your credentials
  */
  
@@ -19,7 +19,7 @@ $api = new Api(
     $application_key,
     $endpoint
 );
-echo "Welcome " . $api->get('/me')['response']['firstname'];
+echo "Welcome " . $api->get('/v1/me')['response']['firstname'];
 
 ?>
 ```
@@ -72,7 +72,7 @@ $api = new Api(
 );
 
 try {
-  echo "Welcome " . $api->get('/me')['firstname'];
+  echo "Welcome " . $api->get('/v1/me')['firstname'];
 }
 catch (GuzzleHttp\Exception\ClientException $e) {
     $response = $e->getResponse();
@@ -91,10 +91,10 @@ The following endpoints are available for public use:
 ## My Account
 
  * ```$endpoint = 'myaccount';```
- * Documentation: https://www.interaxiom.com.au/knowledgebase/api/
+ * Documentation: https://myaccount.interaxiom.com.au/knowledgebase/api
  * Customer Support: development@interaxiom.com.au
- * Console: https://myaccount.interaxiom.com.au/#!api/
- * Create application credentials: https://myaccount.interaxiom.com.au/#!user/api
+ * Console: https://myaccount.interaxiom.com.au/api
+ * Create application credentials: https://myaccount.interaxiom.com.au/api
 
 ## Related links
 
