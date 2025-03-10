@@ -17,7 +17,7 @@ $api = new Api(
     $public_key,
     $private_key,
     $application_key,
-    $endpoint
+    'api-myaccount'
 );
 echo "Welcome " . $api->get('/v1/me')['response']['firstname'];
 
@@ -67,8 +67,9 @@ use \Interaxiom\Api;
 $api = new Api(
     $public_key,
     $private_key,
-    $endpoint,
-    $application_key
+    $application_key,
+    'api-myaccount',
+    
 );
 
 try {
