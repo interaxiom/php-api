@@ -68,7 +68,7 @@ $api = new Api(
     $public_key,
     $private_key,
     $application_key,
-    'api-myaccount',
+    'api-myaccount'
     
 );
 
