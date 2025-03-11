@@ -5,10 +5,7 @@ This PHP package is a lightweight wrapper for Interaxiom API's. That's the easie
 ```php
 <?php
 
-/**
- * # Visit https://myaccount.interaxiom.com.au/api
- * to get your credentials
- */
+# Visit https://myaccount.interaxiom.com.au/api to get your credentials
  
 require __DIR__ . '/vendor/autoload.php';
 use \Interaxiom\Api;
@@ -21,7 +18,6 @@ $api = new Api(
 );
 echo "Welcome " . $api->get('/v1/me')['response']['firstname'];
 
-?>
 ```
 
 Quickstart
@@ -69,7 +65,6 @@ $api = new Api(
     $private_key,
     $application_key,
     'api-myaccount'
-    
 );
 
 try {
@@ -80,8 +75,6 @@ catch (GuzzleHttp\Exception\ClientException $e) {
     $responseBodyAsString = $response->getBody()->getContents();
     echo $responseBodyAsString;
 }
-
-?>
 ```
 
 Supported APIs
