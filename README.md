@@ -19,7 +19,7 @@ $api = new Api(
 
 echo "Welcome " . $api->get('/v1/me')['response']['firstname'];
 
-php?>
+?>
 ```
 
 Quickstart
@@ -79,7 +79,7 @@ catch (GuzzleHttp\Exception\ClientException $e) {
     echo $responseBodyAsString;
 }
 
-php?>
+?>
 ```
 
 Supported APIs
