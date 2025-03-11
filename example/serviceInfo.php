@@ -4,10 +4,10 @@ require_once __DIR__ . "/../../../../vendor/autoload.php";
 
 use Interaxiom\Api;
 
-$public_key		= "public-key";
-$private_key		= "secret-key";
-$application_key	= "application-key";
-$endpoint		= "myaccount";
+$public_key = "public-key";
+$private_key = "secret-key";
+$application_key = "application-key";
+$endpoint = "api-myaccount";
 
 $api = new Api(
 	$public_key,
@@ -16,7 +16,7 @@ $api = new Api(
 	$endpoint
 );
 try {
-	$response = $api->get('/services/info', array(
+	$response = $api->get('/v1/services/info', array(
 		'serviceid' => '1086'
 	));
 }
