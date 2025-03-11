@@ -10,11 +10,16 @@ This PHP package is a lightweight wrapper for Interaxiom API's. That's the easie
 require __DIR__ . '/vendor/autoload.php';
 use \Interaxiom\Api;
 
+$public_key = "public-key";
+$private_key = "secret-key";
+$application_key = "application-key";
+$endpoint = "api-myaccount";
+
 $api = new Api(
     $public_key,
     $private_key,
     $application_key,
-    'api-myaccount'
+    $endpoint
 );
 
 echo "Welcome " . $api->get('/v1/me')['response']['firstname'];
@@ -62,11 +67,16 @@ You can get the error details with a code like:
 require __DIR__ . '/vendor/autoload.php';
 use \Interaxiom\Api;
 
+$public_key = "public-key";
+$private_key = "secret-key";
+$application_key = "application-key";
+$endpoint = "api-myaccount";
+
 $api = new Api(
     $public_key,
     $private_key,
     $application_key,
-    'api-myaccount'
+    $endpoint
 );
 
 try {
