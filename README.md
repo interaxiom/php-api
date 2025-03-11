@@ -16,8 +16,8 @@ $api = new Api(
     $application_key,
     'api-myaccount'
 );
-echo "Welcome " . $api->get('/v1/me')['response']['firstname'];
 
+echo "Welcome " . $api->get('/v1/me')['response']['firstname'];
 ```
 
 Quickstart
@@ -40,8 +40,8 @@ this file, create it at the root of your project with this content:
         "interaxiom/php-api": "dev-master"
     }
 }
-
 ```
+
 Interaxiom Examples
 -------------------
 
@@ -70,6 +70,7 @@ $api = new Api(
 try {
   echo "Welcome " . $api->get('/v1/me')['firstname'];
 }
+
 catch (GuzzleHttp\Exception\ClientException $e) {
     $response = $e->getResponse();
     $responseBodyAsString = $response->getBody()->getContents();
