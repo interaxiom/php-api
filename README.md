@@ -91,7 +91,7 @@ The following endpoints are available for public use:
 
 ## My Account
 
- * ```$endpoint = 'myaccount';```
+ * ```$endpoint = 'api-myaccount';```
  * Documentation: https://myaccount.interaxiom.com.au/knowledgebase/api
  * Customer Support: development@interaxiom.com.au
  * Console: https://myaccount.interaxiom.com.au/api
