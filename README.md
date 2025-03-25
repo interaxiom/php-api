@@ -1,5 +1,3 @@
-[![PHP Wrapper for Interaxiom APIs](https://github.com/interaxiom/php-api/blob/master/img/logo.png)](https://packagist.org/packages/interaxiom/php-api)
-
 This PHP package is a lightweight wrapper for Interaxiom API's. That's the easiest way to use interaxiom.com.au APIs in your PHP applications.
 
 ```php
