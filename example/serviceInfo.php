@@ -16,7 +16,7 @@ $api = new Api(
 	$endpoint
 );
 try {
-	$response = $api->get('/v1/services/info', array(
+	$response = $api->get('/v1/services', array(
 		'serviceid' => '1086'
 	));
 }
