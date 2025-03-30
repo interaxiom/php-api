@@ -8,10 +8,10 @@ This PHP package is a lightweight wrapper for Interaxiom API's and is the easies
 require __DIR__ . '/vendor/autoload.php';
 use \Interaxiom\Api;
 
-$public_key = "public-key";
-$private_key = "secret-key";
-$application_key = "application-key";
-$endpoint = "api-myaccount";
+$public_key = 'public-key';
+$private_key = 'secret-key';
+$application_key = 'application-key';
+$endpoint = 'api-myaccount';
 
 $api = new Api(
     $public_key,
@@ -20,7 +20,7 @@ $api = new Api(
     $endpoint
 );
 
-echo "Welcome " . $api->get('/v1/me')['response']['firstname'];
+echo 'Welcome ' . $api->get('/v1/me')['response']['firstname'];
 
 ?>
 ```
@@ -65,10 +65,10 @@ You can get the error details with a code like:
 require __DIR__ . '/vendor/autoload.php';
 use \Interaxiom\Api;
 
-$public_key = "public-key";
-$private_key = "secret-key";
-$application_key = "application-key";
-$endpoint = "api-myaccount";
+$public_key = 'public-key';
+$private_key = 'secret-key';
+$application_key = 'application-key';
+$endpoint = 'api-myaccount';
 
 $api = new Api(
     $public_key,
@@ -78,7 +78,7 @@ $api = new Api(
 );
 
 try {
-  echo "Welcome " . $api->get('/v1/me')['firstname'];
+  echo 'Welcome ' . $api->get('/v1/me')['firstname'];
 }
 
 catch (GuzzleHttp\Exception\ClientException $e) {
