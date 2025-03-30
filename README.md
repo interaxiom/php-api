@@ -1,4 +1,4 @@
-This PHP package is a lightweight wrapper for Interaxiom API's. That's the easiest way to use interaxiom.com.au APIs in your PHP applications.
+This PHP package is a lightweight wrapper for Interaxiom API's and is the easiest way to use interaxiom.com.au API's in PHP applications.
 
 ```php
 <?php
