@@ -1,3 +1,6 @@
+php-api
+========
+
 This PHP package is a lightweight wrapper for Interaxiom API's and is the easiest way to use interaxiom.com.au API's in PHP applications.
 
 ```php
@@ -50,7 +53,7 @@ this file, create it at the root of your project with this content:
 Interaxiom Examples
 -------------------
 
-Do you want to use Interaxiom APIs? Maybe the script you want is already written in the [example](https://github.com/interaxiom/php-api/tree/master/example) part of this repository!
+Do you want to use Interaxiom APIs? Maybe the script you want is already written in the [examples](https://github.com/interaxiom/php-api/tree/master/examples) part of this repository!
 
 How to print API error details?
 -------------------------------
