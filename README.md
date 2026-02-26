@@ -35,7 +35,9 @@ To download this wrapper and integrate it inside your PHP application, you can u
 
 Quick integration with the following command:
 
-```$ composer require interaxiom/php-api```
+```
+$ composer require interaxiom/php-api
+```
 
 Or add the repository in your **composer.json** file or, if you don't already have
 this file, create it at the root of your project with this content:
