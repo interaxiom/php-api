@@ -23,7 +23,7 @@ $api = new Api(
     $endpoint
 );
 
-echo 'Welcome ' . $api->get('/v1/me')['response']['firstname'];
+echo 'Welcome ' . $api->get('/v1/me')['result']['firstname'];
 
 ?>
 ```
